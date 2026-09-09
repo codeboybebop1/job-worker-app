@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base resets matching the old app's design system */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f3f4f6;
+  color: #1d2433;
+  font-size: 15px;
+}
+
+button { font-family: inherit; }
+input, select, textarea { font-family: inherit; font-size: 14px; }
+
+/* Table horizontal scroll wrapper */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  max-width: min(400px, calc(100vw - 44px));
+  background: #1d2433;
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.25s;
+  word-wrap: break-word;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 33, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+/* Badge variants */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.badge-pending { background: #fef3e0; color: #b45309; }
+.badge-completed { background: #e7f6ec; color: #15803d; }
+.badge-low { background: #fdeaea; color: #b91c1c; }
+.badge-ok { background: #e7f6ec; color: #15803d; }
+.badge-neutral { background: #eef0f3; color: #5b6472; }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8a92a0;
+}
+.empty-state .msg { font-size: 13.5px; }
+
+/* Combo box (search + inline add) */
+.combo { position: relative; }
+.combo-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #b9bfca;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(20, 24, 33, 0.14);
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border: 1px solid #d8dce3;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: #1d2433;
+}
+.btn:hover { background: #f7f8fa; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+.btn-primary:hover { background: #1d4ed8; }
+.btn-ghost { background: transparent; border-color: transparent; }
+.btn-ghost:hover { background: #f3f4f6; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* Card */
+.card {
+  background: #fff;
+  border: 1px solid #d8dce3;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* Flex utilities */
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-end { display: flex; justify-content: flex-end; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.mt-2 { margin-top: 8px; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-xs { font-size: 12px; }
+.text-sm { font-size: 13.5px; }
+.font-mono { font-family: ui-monospace, monospace; }
+.font-bold { font-weight: 700; }
+.uppercase { text-transform: uppercase; }
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.space-y-2 > * + * { margin-top: 8px; }
+.space-y-3 > * + * { margin-top: 12px; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.gap-1 { gap: 4px; }
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 50;
+  margin-top: 3px;
+}
+.combo-item { padding: 8px 10px; cursor: pointer; font-size: 13.5px; }
+.combo-item:hover, .combo-item.hl { background: #e8eefc; }
+.combo-item.add-new { color: #1d4ed8; font-weight: 700; border-top: 1px solid #d8dce3; }
+
+/* Section block (for nested forms) */
+.section-block {
+  border: 1px solid #d8dce3;
+  border-radius: 7px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #fbfbfc;
+  position: relative;
+}
