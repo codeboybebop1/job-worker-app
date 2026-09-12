@@ -195,7 +195,9 @@ export default function JobWorkerEdit() {
       showToast('Saved')
       navigate('/masters', { state: { tab: 'jobWorkers' } })
     } catch (err) {
-      showToast(`Failed: ${err.message}`)
+      const msg = err?.message || String(err)
+      const flat = msg.replace(/\s+/g, ' ').trim()
+      showToast(`Failed: ${flat}`)
     } finally {
       setSaving(false)
     }

@@ -110,25 +110,60 @@ export function exportJobWorkersCSV(workers, filename = 'job_workers_groups.csv'
   exportCSV(flatData, columns, filename)
 }
 
-// Fetch all data for full backup
+// Fetch every row of a table using pagination so tables with >1000 rows
+// (Supabase's default page size) are not silently truncated in the backup.
+// The query builder is immutable — each .range() returns a new query — so we
+// can call it repeatedly on the same base query.
+async function fetchAllRows(baseQuery) {
+  const PAGE_SIZE = 1000
+  let allRows = []
+  let from = 0
+  while (true) {
+    const { data, error } = await baseQuery.range(from, from + PAGE_SIZE - 1)
+    if (error) throw new Error(error.message)
+    if (!data || data.length === 0) break
+    allRows = allRows.concat(data)
+    if (data.length < PAGE_SIZE) break
+    from += PAGE_SIZE
+  }
+  return allRows
+}
+
+// Fetch ALL tables for a complete database backup.
+// Every table is included with its full nested relations so nothing is left out.
 export async function fetchAllDataForBackup() {
-  const [jobWorkers, itemTypes, parties, fabrics, partNames] = await Promise.all([
-    supabase.from('job_workers').select('*, groups(*, group_sizes(*, group_parts(*, group_part_bom(*))))'),
-    supabase.from('item_types').select('*'),
-    supabase.from('parties').select('*'),
-    supabase.from('fabrics').select('*'),
-    supabase.from('part_names').select('*'),
+  const [jobWorkers, itemTypes, parties, fabrics, partNames, orders, issueFabric, receiveMaterial, payments, profiles] = await Promise.all([
+    // Job workers → groups → (group_sizes, group_parts → group_part_bom)
+    fetchAllRows(supabase.from('job_workers').select('*, groups(*, group_sizes(*), group_parts(*, group_part_bom(*)))')),
+    fetchAllRows(supabase.from('item_types').select('*')),
+    fetchAllRows(supabase.from('parties').select('*')),
+    fetchAllRows(supabase.from('fabrics').select('*')),
+    fetchAllRows(supabase.from('part_names').select('*')),
+    // Orders → expected quantities (includes soft-deleted rows: deleted_at is
+    // preserved in the data so a restore can decide what to do with them)
+    fetchAllRows(supabase.from('orders').select('*, order_expected_qty(*)')),
+    // Issue fabric → blocks → lumps
+    fetchAllRows(supabase.from('issue_fabric').select('*, issue_fabric_blocks(*, issue_fabric_lumps(*))')),
+    // Receive material → items → (size-wise pieces, part-fabric mappings)
+    fetchAllRows(supabase.from('receive_material').select('*, receive_items(*, receive_item_sizes(*), receive_item_part_fabric(*))')),
+    fetchAllRows(supabase.from('payments').select('*')),
+    fetchAllRows(supabase.from('profiles').select('*')),
   ])
-  
+
   return {
     exportedAt: new Date().toISOString(),
-    version: '1.0',
+    version: '2.0',
     data: {
-      jobWorkers: jobWorkers.data || [],
-      itemTypes: itemTypes.data || [],
-      parties: parties.data || [],
-      fabrics: fabrics.data || [],
-      partNames: partNames.data || [],
-    }
+      jobWorkers,
+      itemTypes,
+      parties,
+      fabrics,
+      partNames,
+      orders,
+      issueFabric,
+      receiveMaterial,
+      payments,
+      profiles,
+    },
   }
 }
