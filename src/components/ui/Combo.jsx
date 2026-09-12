@@ -13,7 +13,12 @@ import { useState, useRef, useEffect } from 'react'
  *   - onChange: (value) => void — called when the input value changes (optional)
  *   - className: additional class for the input
  */
-export default function Combo({ list = [], value, placeholder = 'Search or add new...', onSelect, onAddNew, onChange, className = '' }) {
+export default function Combo({ list, value, placeholder = 'Search or add new...', onSelect, onAddNew, onChange, className = '' }) {
+  // `list` may be null while the parent's useApiCall is still loading
+  // (e.g. History → Edit challan navigates before jobWorkers/fabrics resolve).
+  // Coerce to [] so .find/.filter/.some below never throw "can't access
+  // property find of null". Fixes the History->edit crash.
+  const safeList = Array.isArray(list) ? list : []
   const [inputValue, setInputValue] = useState('')
   const [currentId, setCurrentId] = useState(value || '')
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -24,7 +29,7 @@ export default function Combo({ list = [], value, placeholder = 'Search or add n
   // Sync with external value changes
   useEffect(() => {
     setCurrentId(value || '')
-    const selected = list.find(x => x.id === value)
+    const selected = safeList.find(x => x.id === value)
     setInputValue(selected ? selected.name : '')
   }, [value, list])
 
@@ -39,8 +44,8 @@ export default function Combo({ list = [], value, placeholder = 'Search or add n
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const matches = list.filter(x => x.name.toLowerCase().includes(filterText.toLowerCase()))
-  const exactMatch = list.some(x => x.name.trim().replace(/\s+/g, ' ').toLowerCase() === filterText.trim().replace(/\s+/g, ' ').toLowerCase())
+  const matches = safeList.filter(x => x.name.toLowerCase().includes(filterText.toLowerCase()))
+  const exactMatch = safeList.some(x => x.name.trim().replace(/\s+/g, ' ').toLowerCase() === filterText.trim().replace(/\s+/g, ' ').toLowerCase())
 
   function handleInputChange(e) {
     const val = e.target.value
@@ -68,7 +73,7 @@ export default function Combo({ list = [], value, placeholder = 'Search or add n
     if (!name) return
 
     // Check for duplicate (case-insensitive)
-    const existing = list.find(x => x.name.trim().replace(/\s+/g, ' ').toLowerCase() === name.toLowerCase())
+    const existing = safeList.find(x => x.name.trim().replace(/\s+/g, ' ').toLowerCase() === name.toLowerCase())
     if (existing) {
       selectItem(existing)
       return
