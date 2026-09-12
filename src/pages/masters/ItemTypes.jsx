@@ -5,7 +5,7 @@ import { fetchJobWorkers } from '../../features/masters/jobWorkersApi'
 import { fetchOrders } from '../../features/orders/api'
 import { fetchReceiveMaterial } from '../../features/receiveMaterial/api'
 import { showToast } from '../../components/ui/Toast'
-import { nextId } from '../../lib/format'
+import { useConfirm } from '../../components/ui/ConfirmModal'
 import { FiPlus, FiTrash2, FiEdit2, FiCheck } from 'react-icons/fi'
 
 export default function ItemTypes() {
@@ -18,6 +18,7 @@ export default function ItemTypes() {
   const [newName, setNewName] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
+  const { confirm } = useConfirm()
 
   async function handleAdd() {
     const name = newName.trim().replace(/\s+/g, ' ')
@@ -25,7 +26,7 @@ export default function ItemTypes() {
     if (items?.some((x) => x.name.toLowerCase() === name.toLowerCase()))
       return showToast(`"${name}" already exists`)
     try {
-      await saveItem({ id: nextId('it'), name })
+      await saveItem({ name })
       showToast(`Added "${name}"`)
       setNewName('')
       refetch()
@@ -66,7 +67,13 @@ export default function ItemTypes() {
       if (usage.inReceives) parts.push(`${usage.inReceives} receive entr${usage.inReceives === 1 ? 'y' : 'ies'}`)
       return showToast(`Cannot delete "${name}": used in ${parts.join(', ')}. Remove those links first.`)
     }
-    if (!confirm(`Delete "${name}"?`)) return
+    const ok = await confirm({
+      title: 'Delete Item Type',
+      message: `Are you sure you want to delete "${name}"? This action cannot be undone.`,
+      type: 'danger',
+      confirmText: 'Delete',
+    })
+    if (!ok) return
     try {
       await removeItem(id)
       showToast('Deleted')

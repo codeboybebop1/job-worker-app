@@ -1,8 +1,8 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useApiCall, useMutation } from '../../hooks/useApiCall'
 import { fetchPartNames, upsertPartName, deletePartName } from '../../features/masters/api'
 import { showToast } from '../../components/ui/Toast'
-import { nextId } from '../../lib/format'
+import { useConfirm } from '../../components/ui/ConfirmModal'
 import { FiPlus, FiTrash2, FiEdit2, FiCheck } from 'react-icons/fi'
 
 /**
@@ -18,13 +18,14 @@ export default function PartNames() {
   const [newName, setNewName] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [editName, setEditName] = useState('')
+  const { confirm } = useConfirm()
 
   async function handleAdd() {
     const name = newName.trim().replace(/\s+/g, ' ')
     if (!name) return showToast('Enter a part name')
     if (items?.some((x) => x.name.toLowerCase() === name.toLowerCase()))
       return showToast(`"${name}" already exists`)
-    try { await saveItem({ id: nextId('pn'), name }); showToast(`Added "${name}"`); setNewName(''); refetch() }
+    try { await saveItem({ name }); showToast(`Added "${name}"`); setNewName(''); refetch() }
     catch (err) { showToast(`Failed: ${err.message}`) }
   }
 
@@ -36,7 +37,7 @@ export default function PartNames() {
   }
 
   async function handleDelete(id, name) {
-    if (!confirm(`Delete "${name}"?`)) return
+    const ok = await confirm({ title: 'Delete Part Name', message: `Delete "${name}"? This action cannot be undone.`, type: 'danger', confirmText: 'Delete', }); if (!ok) return
     try { await removeItem(id); showToast('Deleted'); refetch() }
     catch (err) { showToast(`Failed: ${err.message}`) }
   }

@@ -1,15 +1,28 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useApiCall } from '../hooks/useApiCall'
 import { fetchReceiveMaterial } from '../features/receiveMaterial/api'
 import { fetchJobWorkers } from '../features/masters/jobWorkersApi'
 import { fetchItemTypes } from '../features/masters/api'
 import { fmtNum } from '../lib/format'
 
+const FILTERS_KEY = 'jwt_filters_groupWise'
+
 export default function GroupWiseData() {
   const { data: receives, loading, error } = useApiCall(fetchReceiveMaterial)
   const { data: jobWorkers } = useApiCall(fetchJobWorkers)
   const { data: itemTypes } = useApiCall(fetchItemTypes)
-  const [filt, setFilt] = useState({ date_from: '', date_to: '', jobWorkerId: '', itemTypeId: '', groupId: '' })
+  const [filt, setFilt] = useState(() => {
+    try {
+      const saved = localStorage.getItem(FILTERS_KEY)
+      return saved ? JSON.parse(saved) : { date_from: '', date_to: '', jobWorkerId: '', itemTypeId: '', groupId: '' }
+    } catch { return { date_from: '', date_to: '', jobWorkerId: '', itemTypeId: '', groupId: '' } }
+  })
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    try { localStorage.setItem(FILTERS_KEY, JSON.stringify(filt)) } catch {}
+  }, [filt])
+
   function set(key, val) { setFilt({ ...filt, [key]: val }) }
 
   function getGroup(jwId, groupId) {

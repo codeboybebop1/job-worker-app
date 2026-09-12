@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+﻿import { useState, useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useApiCall, useMutation } from '../hooks/useApiCall'
 import { fetchOrders, upsertOrder, softDeleteOrder } from '../features/orders/api'
@@ -7,10 +7,12 @@ import { fetchItemTypes, fetchParties, fetchFabrics } from '../features/masters/
 import { showToast } from '../components/ui/Toast'
 import { fmtDate, todayStr } from '../lib/format'
 import { FiPlus, FiTrash2, FiEdit2, FiCheckCircle, FiClock, FiList } from 'react-icons/fi'
+import { useConfirm } from '../components/ui/ConfirmModal'
 
 const STATUSES = ['Pending', 'Completed']
 const F = 'w-full px-3 py-2 border border-border-strong rounded-md text-sm'
 const L = 'block text-[11px] font-bold text-text-soft mb-1 uppercase'
+const FILTERS_KEY = 'jwt_filters_orders'
 
 /**
  * Unified Orders page. Combines the create/edit form (from the old Create Order
@@ -29,8 +31,19 @@ export default function Orders() {
   const [form, setForm] = useState(null)
   const [statusFilter, setStatusFilter] = useState('All')
   const [showDeleted, setShowDeleted] = useState(false)
-  const [filt, setFilt] = useState({})
+  const [filt, setFilt] = useState(() => {
+    try {
+      const saved = localStorage.getItem(FILTERS_KEY)
+      return saved ? JSON.parse(saved) : {}
+    } catch { return {} }
+  })
   const location = useLocation()
+  const { confirm } = useConfirm()
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    try { localStorage.setItem(FILTERS_KEY, JSON.stringify(filt)) } catch {}
+  }, [filt])
 
   useEffect(() => {
     const editOrder = location.state?.editOrder
@@ -57,7 +70,7 @@ export default function Orders() {
     if (!form.jobWorkerId || !form.partyId || !form.itemTypeId || !form.groupId) return showToast('Fill required fields')
     try { await saveOrder({ id: form.id, dateCreated: form.dateCreated, jobWorkerId: form.jobWorkerId, partyId: form.partyId, itemTypeId: form.itemTypeId, groupId: form.groupId, fabricId: form.fabricId, status: form.status, fabricNote: '', notes: '', expectedQty: form.expectedQty }); showToast(form.id ? 'Updated' : 'Created'); setForm(null); refetch() } catch (err) { showToast('Failed: ' + err.message) }
   }
-  async function handleDelete(id) { if (!confirm('Delete?')) return; try { await deleteOrderMut(id); showToast('Deleted'); refetch() } catch (err) { showToast('Failed: ' + err.message) } }
+  async function handleDelete(id) { const ok = await confirm({ title: 'Delete Order', message: 'This order will be permanently deleted. This action cannot be undone.', type: 'danger', confirmText: 'Delete', }); if (!ok) return; try { await deleteOrderMut(id); showToast('Deleted'); refetch() } catch (err) { showToast('Failed: ' + err.message) } }
   async function toggleStatus(o) {
     try { await saveOrder({ id: o.id, dateCreated: o.date_created, jobWorkerId: o.job_worker_id, partyId: o.party_id, itemTypeId: o.item_type_id, groupId: o.group_id, fabricId: o.fabric_id, status: o.status === 'Pending' ? 'Completed' : 'Pending', fabricNote: '', notes: '', expectedQty: {} }); showToast('Status updated'); refetch() } catch (err) { showToast('Failed: ' + err.message) }
   }

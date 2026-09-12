@@ -5,6 +5,7 @@ import { fetchReceiveMaterial, upsertReceiveMaterial, deleteReceiveMaterial } fr
 import { fetchJobWorkers } from '../features/masters/jobWorkersApi'
 import { fetchItemTypes, fetchParties, fetchFabrics } from '../features/masters/api'
 import { showToast } from '../components/ui/Toast'
+import { useConfirm } from '../components/ui/ConfirmModal'
 import { fmtDate, fmtNum, todayStr } from '../lib/format'
 import { FiPlus, FiTrash2, FiEdit2 } from 'react-icons/fi'
 import ReceiveMaterialForm from '../components/receiveMaterial/ReceiveMaterialForm'
@@ -20,6 +21,7 @@ export default function ReceiveMaterial() {
   const { mutate: remove } = useMutation(deleteReceiveMaterial)
   const [form, setForm] = useState(null)
   const location = useLocation()
+  const { confirm } = useConfirm()
 
   useEffect(() => {
     const editEntry = location.state?.editEntry
@@ -32,7 +34,7 @@ export default function ReceiveMaterial() {
   async function handleSave(payload) {
     try { await save(payload); showToast(form.id ? 'Updated' : 'Saved'); setForm(null); refetch() } catch (err) { showToast('Failed: ' + err.message) }
   }
-  async function handleDelete(id) { if (!confirm('Delete?')) return; try { await remove(id); showToast('Deleted'); refetch() } catch (err) { showToast('Failed: ' + err.message) } }
+  async function handleDelete(id) { const ok = await confirm({ title: 'Delete Entry', message: 'This entry will be permanently deleted. This action cannot be undone.', type: 'danger', confirmText: 'Delete', }); if (!ok) return; try { await remove(id); showToast('Deleted'); refetch() } catch (err) { showToast('Failed: ' + err.message) } }
   if (loading) return <div className="text-text-soft p-8">Loading...</div>
   if (error) return <div className="text-red p-8">Error: {error}</div>
 

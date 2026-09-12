@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Payments page — record and manage payments to job workers.
  * Simple CRUD on the payments table.
  */
@@ -7,7 +7,8 @@ import { useApiCall, useMutation } from '../hooks/useApiCall'
 import { fetchPayments, upsertPayment, deletePayment } from '../features/payments/api'
 import { fetchJobWorkers } from '../features/masters/jobWorkersApi'
 import { showToast } from '../components/ui/Toast'
-import { nextId, fmtNum, fmtDate, todayStr } from '../lib/format'
+import { useConfirm } from '../components/ui/ConfirmModal'
+import { fmtNum, fmtDate, todayStr } from '../lib/format'
 import { FiPlus, FiTrash2 } from 'react-icons/fi'
 
 export default function Payments() {
@@ -15,6 +16,7 @@ export default function Payments() {
   const { data: jobWorkers } = useApiCall(fetchJobWorkers)
   const { mutate: savePayment, loading: saving } = useMutation(upsertPayment)
   const { mutate: removePayment } = useMutation(deletePayment)
+  const { confirm } = useConfirm()
 
   const [form, setForm] = useState({ jobWorkerId: '', amount: '', date: todayStr(), notes: '' })
 
@@ -25,7 +27,7 @@ export default function Payments() {
     if (!form.jobWorkerId) return showToast('Select a job worker')
     if (!form.amount || Number(form.amount) <= 0) return showToast('Enter a valid amount')
     try {
-      await savePayment({ id: nextId('pay'), jobWorkerId: form.jobWorkerId, amount: Number(form.amount), date: form.date, notes: form.notes })
+      await savePayment({ jobWorkerId: form.jobWorkerId, amount: Number(form.amount), date: form.date, notes: form.notes })
       showToast(`Payment of ₹${fmtNum(form.amount)} recorded`)
       setForm({ jobWorkerId: '', amount: '', date: todayStr(), notes: '' })
       refetch()
@@ -33,7 +35,7 @@ export default function Payments() {
   }
 
   async function handleDelete(id) {
-    if (!confirm('Delete this payment?')) return
+    const ok = await confirm({ title: 'Delete Payment', message: 'This payment record will be permanently deleted.', type: 'danger', confirmText: 'Delete', }); if (!ok) return
     try { await removePayment(id); showToast('Deleted'); refetch() }
     catch (err) { showToast(`Failed: ${err.message}`) }
   }

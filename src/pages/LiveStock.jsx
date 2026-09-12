@@ -3,7 +3,7 @@
  * Shows fabric balance per job-worker: issued minus BOM-consumed.
  * Filterable by job worker and fabric.
  */
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useApiCall } from '../hooks/useApiCall'
 import { fetchLiveStock } from '../features/views/api'
 import { fetchJobWorkers } from '../features/masters/jobWorkersApi'
@@ -11,12 +11,31 @@ import { fetchFabrics, fetchItemTypes, fetchParties } from '../features/masters/
 import { fmtNum } from '../lib/format'
 import { FiFilter } from 'react-icons/fi'
 
+const FILTERS_KEY = 'jwt_filters_liveStock'
+
 export default function LiveStock() {
   const { data: stockRows, loading, error } = useApiCall(fetchLiveStock)
   const { data: jobWorkers } = useApiCall(fetchJobWorkers)
   const { data: fabrics } = useApiCall(fetchFabrics)
   const [filterJw, setFilterJw] = useState('')
   const [filterFab, setFilterFab] = useState('')
+
+  // Restore filters from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(FILTERS_KEY)
+      if (saved) {
+        const { filterJw: sJw, filterFab: sFab } = JSON.parse(saved)
+        if (sJw) setFilterJw(sJw)
+        if (sFab) setFilterFab(sFab)
+      }
+    } catch {}
+  }, [])
+
+  // Persist filters to localStorage
+  useEffect(() => {
+    try { localStorage.setItem(FILTERS_KEY, JSON.stringify({ filterJw, filterFab })) } catch {}
+  }, [filterJw, filterFab])
 
   const filtered = useMemo(() => {
     if (!stockRows) return []
@@ -64,6 +83,7 @@ export default function LiveStock() {
               {fabrics?.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
           </div>
+          <button className="btn btn-sm self-end" onClick={() => { setFilterJw(''); setFilterFab('') }}>Clear filters</button>
         </div>
 
         {/* Table */}

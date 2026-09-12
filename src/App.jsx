@@ -10,12 +10,14 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import AppShell from './components/layout/AppShell'
 import ToastHost from './components/ui/Toast'
+import { ConfirmProvider } from './components/ui/ConfirmModal'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Orders from './pages/Orders'
 import IssueFabric from './pages/IssueFabric'
 import ReceiveMaterial from './pages/ReceiveMaterial'
 import Masters from './pages/masters/Masters'
+import JobWorkerEdit from './pages/masters/JobWorkerEdit'
 import Payments from './pages/Payments'
 import History from './pages/History'
 import LiveStock from './pages/LiveStock'
@@ -53,27 +55,30 @@ export default function App() {
   }
 
   return (
-    <>
-      <ToastHost />
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/orders-list" element={<Navigate to="/orders" replace />} />
-          <Route path="/issue-fabric" element={<IssueFabric />} />
-          <Route path="/receive-material" element={<ReceiveMaterial />} />
-          <Route path="/masters" element={<Masters />} />
-          <Route path="/masters/*" element={<Navigate to="/masters" replace />} />
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/live-stock" element={<LiveStock />} />
-          <Route path="/fabric-ledger" element={<FabricLedger />} />
-          <Route path="/group-wise" element={<GroupWiseData />} />
-          <Route path="/billing" element={<Billing />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </>
+    <ConfirmProvider>
+      <>
+        <ToastHost />
+        <Routes>
+          <Route element={<AppShell />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders-list" element={<Navigate to="/orders" replace />} />
+            <Route path="/issue-fabric" element={<IssueFabric />} />
+            <Route path="/receive-material" element={<ReceiveMaterial />} />
+            <Route path="/masters" element={<Masters />} />
+            <Route path="/masters/job-workers/:id" element={<JobWorkerEdit />} />
+            <Route path="/masters/*" element={<Navigate to="/masters" replace />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/live-stock" element={<LiveStock />} />
+            <Route path="/fabric-ledger" element={<FabricLedger />} />
+            <Route path="/group-wise" element={<GroupWiseData />} />
+            <Route path="/billing" element={<Billing />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </>
+    </ConfirmProvider>
   )
 }
 

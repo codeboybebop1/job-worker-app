@@ -4,6 +4,7 @@
 import { useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { FiMenu, FiLogOut } from 'react-icons/fi'
+import GlobalSearch from '../GlobalSearch'
 
 const TITLES = {
   '/': 'Dashboard',
@@ -37,7 +38,8 @@ export default function Topbar({ onMenuClick }) {
         <h1 className="text-base font-bold m-0 truncate">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-3 flex-none">
+      <div className="flex items-center gap-2 sm:gap-3 flex-none">
+        <GlobalSearch />
         <span className="text-sm text-text-soft hidden sm:inline">
           {profile?.full_name || profile?.email}
         </span>

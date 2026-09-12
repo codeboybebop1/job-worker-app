@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApiCall } from '../hooks/useApiCall'
 import { fetchOrders } from '../features/orders/api'
@@ -8,7 +8,7 @@ import { fetchIssueFabric } from '../features/issueFabric/api'
 import { fetchReceiveMaterial } from '../features/receiveMaterial/api'
 import { fetchLiveStock } from '../features/views/api'
 import { fmtNum, fmtDate } from '../lib/format'
-import { FiShoppingCart, FiUpload, FiDownload, FiPackage, FiClock, FiCheckCircle, FiPlus, FiArrowUp, FiArrowDown, FiEye } from 'react-icons/fi'
+import { FiShoppingCart, FiUpload, FiDownload, FiPackage, FiClock, FiCheckCircle, FiPlus, FiArrowUp, FiArrowDown, FiEye, FiSearch } from 'react-icons/fi'
 
 /**
  * Dashboard. Reference: function renderDashboard(c) in jobwork_v3.html.
@@ -46,10 +46,24 @@ export default function Dashboard() {
     return total
   }, [receives, jobWorkers])
 
+  const [orderSearch, setOrderSearch] = useState('')
+
   const recentOrders = useMemo(() => {
     if (!orders) return []
-    return [...orders].sort((a, b) => new Date(b.date_created) - new Date(a.date_created)).slice(0, 8)
-  }, [orders])
+    const sorted = [...orders].sort((a, b) => new Date(b.date_created) - new Date(a.date_created))
+    const q = orderSearch.trim().toLowerCase()
+    if (!q) return sorted.slice(0, 8)
+    const pN = (id) => parties?.find((p) => p.id === id)?.name || ''
+    const iN = (id) => itemTypes?.find((t) => t.id === id)?.name || ''
+    const jN = (id) => jobWorkers?.find((j) => j.id === id)?.name || ''
+    return sorted
+      .filter((o) =>
+        [o.date_created, o.status, pN(o.party_id), iN(o.item_type_id), jN(o.job_worker_id)].some((v) =>
+          (v || '').toLowerCase().includes(q)
+        )
+      )
+      .slice(0, 8)
+  }, [orders, orderSearch, parties, itemTypes, jobWorkers])
 
   return (
     <div>
@@ -85,9 +99,21 @@ export default function Dashboard() {
       </div>
 
       <div className="bg-panel border border-border rounded-lg p-4">
-        <h2 className="text-base font-bold mb-3">Recent Orders</h2>
+        <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+          <h2 className="text-base font-bold">Recent Orders</h2>
+          <div className="relative">
+            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-faint flex"><FiSearch size={14} /></span>
+            <input
+              className="w-52 max-w-full pl-8 pr-3 py-1.5 border border-border-strong rounded-md text-sm bg-white"
+              type="text"
+              placeholder="Search orders..."
+              value={orderSearch}
+              onChange={(e) => setOrderSearch(e.target.value)}
+            />
+          </div>
+        </div>
         {!recentOrders.length ? (
-          <div className="empty-state"><div className="msg">No orders yet. Create your first order to get started.</div></div>
+          <div className="empty-state"><div className="msg">{orderSearch.trim() ? `No orders match "${orderSearch.trim()}".` : 'No orders yet. Create your first order to get started.'}</div></div>
         ) : (
           <div className="table-scroll"><table className="w-full border-collapse text-[13.5px]">
             <thead><tr className="text-left text-text-soft text-xs uppercase font-bold bg-[#f7f8fa] border-b border-border"><th className="p-2.5">Date</th><th className="p-2.5">Party</th><th className="p-2.5">Item Type</th><th className="p-2.5">Job Worker</th><th className="p-2.5">Status</th></tr></thead>

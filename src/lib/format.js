@@ -25,7 +25,12 @@ export function todayStr() {
   return new Date().toISOString().slice(0, 10)
 }
 
-/** Generate a short unique ID for new records before they hit the DB. */
+/**
+ * @deprecated DO NOT use for Supabase `id` columns — they are UUID
+ * (see schems.md). Sending e.g. "it_xxx" causes Postgres error 22P02
+ * "invalid input syntax for type uuid". For creates, omit `id` and let
+ * Postgres `gen_random_uuid()` generate it. Kept only for legacy local keys.
+ */
 export function nextId(prefix = 'id') {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`
 }

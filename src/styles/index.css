@@ -83,6 +83,7 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
 
 /* Combo box (search + inline add) */
 .combo { position: relative; }
+.combo input { width: 100%; }
 .combo-list {
   position: absolute;
   top: 100%;
@@ -92,8 +93,15 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
   border: 1px solid #b9bfca;
   border-radius: 6px;
   box-shadow: 0 6px 18px rgba(20, 24, 33, 0.14);
-
-/* Buttons */
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 50;
+  margin-top: 3px;
+}
+.combo-item { padding: 8px 10px; cursor: pointer; font-size: 13.5px; }
+.combo-item:hover, .combo-item.hl { background: #e8eefc; }
+.combo-item.add-new { color: #1d4ed8; font-weight: 700; border-top: 1px solid #d8dce3; }
+.combo-item.muted { color: #8a92a0; cursor: default; }
 .btn {
   display: inline-flex;
   align-items: center;
@@ -147,16 +155,7 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
 .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .gap-1 { gap: 4px; }
-  max-height: 220px;
-  overflow-y: auto;
-  z-index: 50;
-  margin-top: 3px;
-}
-.combo-item { padding: 8px 10px; cursor: pointer; font-size: 13.5px; }
-.combo-item:hover, .combo-item.hl { background: #e8eefc; }
-.combo-item.add-new { color: #1d4ed8; font-weight: 700; border-top: 1px solid #d8dce3; }
 
-/* Section block (for nested forms) */
 .section-block {
   border: 1px solid #d8dce3;
   border-radius: 7px;
@@ -165,3 +164,86 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
   background: #fbfbfc;
   position: relative;
 }
+
+/* Row layout */
+.row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.row.mt12 { margin-top: 12px; }
+
+/* Field layout */
+.field {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5b6472;
+  margin-bottom: 5px;
+}
+
+/* Small text */
+.small { font-size: 12.5px; }
+
+/* Muted text */
+.muted { color: #8a92a0; }
+
+/* Margin utilities */
+.mt4 { margin-top: 4px; }
+.mt8 { margin-top: 8px; }
+.mt10 { margin-top: 10px; }
+.mt12 { margin-top: 12px; }
+.mb0 { margin-bottom: 0; }
+
+/* Tag */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #eef0f3;
+  border: 1px solid #d8dce3;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Tag list */
+.tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* Empty state icon */
+.empty-state .ic { font-size: 40px; margin-bottom: 10px; }
+
+/* Input fields for forms */
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #b9bfca;
+  border-radius: 6px;
+  font-size: 14px;
+  background: #fff;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Global Search (Topbar mega-search) — ported from jobwork_v3.html */
+.gs-wrap { position: relative; }
+.gs-input { width: 100%; padding: 7px 12px 7px 32px; border: 1px solid #b9bfca; border-radius: 7px; font-size: 13px; background: #f7f8fa; color: #1d2433; }
+.gs-input:focus { outline: none; border-color: #2563eb; background: #fff; box-shadow: 0 0 0 3px #e8eefc; }
+.gs-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #8a92a0; pointer-events: none; display: flex; }
+.gs-results { position: absolute; top: calc(100% + 6px); right: 0; width: min(340px, 90vw); background: #fff; border: 1px solid #b9bfca; border-radius: 8px; box-shadow: 0 8px 24px rgba(20,24,33,0.14); z-index: 300; max-height: 380px; overflow-y: auto; }
+.gs-group-label { padding: 8px 12px 4px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #8a92a0; border-top: 1px solid #d8dce3; }
+.gs-group-label:first-child { border-top: none; }
+.gs-item { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left; padding: 8px 12px; cursor: pointer; background: #fff; border: none; }
+.gs-item:hover, .gs-item.active { background: #e8eefc; }
+.gs-item-icon { color: #2563eb; margin-top: 1px; display: flex; flex: none; }
+.gs-item-text { display: flex; flex-direction: column; min-width: 0; }
+.gs-item-main { display: block; font-size: 13px; font-weight: 600; color: #1d2433; }
+.gs-item-sub { display: block; font-size: 12px; color: #5b6472; }
+.gs-no-results { padding: 12px; font-size: 13px; color: #5b6472; }
+.gs-loading { padding: 12px; font-size: 13px; color: #8a92a0; }

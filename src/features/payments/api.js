@@ -14,13 +14,15 @@ export async function fetchPayments() {
   return data
 }
 
-/** Create or update a payment. */
+/** Create or update a payment. `id` is omitted on create so Postgres generates a UUID. */
 export async function upsertPayment({ id, jobWorkerId, amount, date, notes }) {
-  const { data, error } = await supabase
-    .from('payments')
-    .upsert({ id, job_worker_id: jobWorkerId, amount, date, notes: notes || '' })
-    .select()
-    .single()
+  const payload = id
+    ? { id, job_worker_id: jobWorkerId, amount, date, notes: notes || '' }
+    : { job_worker_id: jobWorkerId, amount, date, notes: notes || '' }
+  const query = id
+    ? supabase.from('payments').upsert(payload)
+    : supabase.from('payments').insert(payload)
+  const { data, error } = await query.select().single()
   if (error) throw new Error(error.message)
   return data
 }

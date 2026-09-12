@@ -61,3 +61,21 @@ export async function deleteJobWorker(id) {
   const { error } = await supabase.from('job_workers').delete().eq('id', id)
   if (error) throw new Error(error.message)
 }
+
+/** Fetch a single job worker with full nested structure (for the edit page). */
+export async function fetchJobWorkerById(id) {
+  const { data, error } = await supabase
+    .from('job_workers')
+    .select(`
+      *,
+      groups(
+        *,
+        group_sizes(*),
+        group_parts(*, group_part_bom(*))
+      )
+    `)
+    .eq('id', id)
+    .single()
+  if (error) throw new Error(error.message)
+  return data
+}

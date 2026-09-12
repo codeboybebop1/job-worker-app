@@ -31,3 +31,6 @@ yarn-error.log*
 
 # Vite cache
 .vite/
+
+# Local Netlify folder
+.netlify
