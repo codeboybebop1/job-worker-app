@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Global (mega) search — React port of the "Global Search" from jobwork_v3.html.
  *
  * Searches across Issue Fabric challans, Receive Material challans, Orders,
@@ -111,7 +111,7 @@ export async function globalSearch(rawQuery) {
         key: `receive-${e.id}`,
         main: `Challan #${e.challan_no}`,
         sub: `${jw?.name || '?'} · ${fmtDate(e.date)}`,
-        to: '/receive-material',
+        to: '/receive-material/new',
         state: { editEntry: e },
       })
     }

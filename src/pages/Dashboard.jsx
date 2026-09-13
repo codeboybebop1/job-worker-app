@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApiCall } from '../hooks/useApiCall'
 import { fetchOrders } from '../features/orders/api'
@@ -18,24 +18,24 @@ import { FiShoppingCart, FiUpload, FiDownload, FiPackage, FiClock, FiCheckCircle
  */
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { data: orders } = useApiCall(fetchOrders)
-  const { data: jobWorkers } = useApiCall(fetchJobWorkers)
-  const { data: itemTypes } = useApiCall(fetchItemTypes)
-  const { data: parties } = useApiCall(fetchParties)
-  const { data: issues } = useApiCall(fetchIssueFabric)
-  const { data: receives } = useApiCall(fetchReceiveMaterial)
+  const { data: orders } = useApiCall(fetchOrders, [], 'orders')
+  const { data: jobWorkers } = useApiCall(fetchJobWorkers, [], 'jobWorkers')
+  const { data: itemTypes } = useApiCall(fetchItemTypes, [], 'itemTypes')
+  const { data: issueFabric } = useApiCall(fetchIssueFabric, [], 'issueFabric')
+  const { data: receiveMaterial } = useApiCall(fetchReceiveMaterial, [], 'receiveMaterial')
+  const { data: parties } = useApiCall(fetchParties, [], 'parties')
   const { data: stockRows } = useApiCall(fetchLiveStock)
 
   const pendingCount = orders?.filter((o) => o.status === 'Pending').length || 0
   const completedCount = orders?.filter((o) => o.status === 'Completed').length || 0
-  const issueCount = issues?.length || 0
-  const receiveCount = receives?.length || 0
+  const issueCount = issueFabric?.length || 0
+  const receiveCount = receiveMaterial?.length || 0
   const bomPendingCount = stockRows?.filter((s) => s.bom_pending).length || 0
 
   const totalBilled = useMemo(() => {
-    if (!receives || !jobWorkers) return 0
+    if (!receiveMaterial || !jobWorkers) return 0
     let total = 0
-    receives.forEach((entry) => {
+    receiveMaterial.forEach((entry) => {
       ;(entry.receive_items || []).forEach((item) => {
         const group = jobWorkers.find((j) => j.id === entry.job_worker_id)?.groups?.find((g) => g.id === item.group_id)
         if (!group) return
@@ -44,7 +44,7 @@ export default function Dashboard() {
       })
     })
     return total
-  }, [receives, jobWorkers])
+  }, [receiveMaterial, jobWorkers])
 
   const [orderSearch, setOrderSearch] = useState('')
 

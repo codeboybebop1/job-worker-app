@@ -55,10 +55,10 @@ function freshForm() {
 }
 
 export default function IssueFabric() {
-  const { data: entries, loading, error, refetch } = useApiCall(fetchIssueFabric)
-  const { data: fabrics, refetch: refetchFabrics } = useApiCall(fetchFabrics)
-  const { data: jobWorkers, refetch: refetchJobWorkers } = useApiCall(fetchJobWorkers)
-  const { data: orders } = useApiCall(fetchOrders)
+  const { data: entries, loading, error, refetch } = useApiCall(fetchIssueFabric, [], 'issueFabric')
+  const { data: fabrics, refetch: refetchFabrics } = useApiCall(fetchFabrics, [], 'fabrics')
+  const { data: jobWorkers, refetch: refetchJobWorkers } = useApiCall(fetchJobWorkers, [], 'jobWorkers')
+  const { data: orders } = useApiCall(fetchOrders, [], 'orders')
   const { mutate: save, loading: saving } = useMutation(upsertIssueFabric)
   const { mutate: remove } = useMutation(deleteIssueFabric)
   const [form, setForm] = useState(null)

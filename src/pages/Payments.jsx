@@ -10,10 +10,10 @@ import { showToast } from '../components/ui/Toast'
 import { useConfirm } from '../components/ui/ConfirmModal'
 import { fmtNum, fmtDate, todayStr } from '../lib/format'
 import { FiPlus, FiTrash2 } from 'react-icons/fi'
-
 export default function Payments() {
-  const { data: payments, loading, error, refetch } = useApiCall(fetchPayments)
-  const { data: jobWorkers } = useApiCall(fetchJobWorkers)
+  const { data: payments, loading, error, refetch } = useApiCall(fetchPayments, [], 'payments')
+  const { data: jobWorkers } = useApiCall(fetchJobWorkers, [], 'jobWorkers')
+
   const { mutate: savePayment, loading: saving } = useMutation(upsertPayment)
   const { mutate: removePayment } = useMutation(deletePayment)
   const { confirm } = useConfirm()

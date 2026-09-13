@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApiCall, useMutation } from '../hooks/useApiCall'
 import { fetchIssueFabric, deleteIssueFabric } from '../features/issueFabric/api'
@@ -19,12 +19,12 @@ export default function History() {
       return saved ? JSON.parse(saved) : { issue: {}, receive: {}, all: {} }
     } catch { return { issue: {}, receive: {}, all: {} } }
   })
-  const { data: issues, refetch: ri } = useApiCall(fetchIssueFabric)
-  const { data: receives, refetch: rr } = useApiCall(fetchReceiveMaterial)
-  const { data: jobWorkers } = useApiCall(fetchJobWorkers)
-  const { data: parties } = useApiCall(fetchParties)
-  const { data: itemTypes } = useApiCall(fetchItemTypes)
-  const { data: fabrics } = useApiCall(fetchFabrics)
+  const { data: issues, refetch: ri } = useApiCall(fetchIssueFabric, [], 'issueFabric')
+  const { data: receives, refetch: rr } = useApiCall(fetchReceiveMaterial, [], 'receiveMaterial')
+  const { data: jobWorkers } = useApiCall(fetchJobWorkers, [], 'jobWorkers')
+  const { data: parties } = useApiCall(fetchParties, [], 'parties')
+  const { data: itemTypes } = useApiCall(fetchItemTypes, [], 'itemTypes')
+  const { data: fabrics } = useApiCall(fetchFabrics, [], 'fabrics')
   const navigate = useNavigate()
   const { mutate: removeIssue } = useMutation(deleteIssueFabric)
   const { mutate: removeReceive } = useMutation(deleteReceiveMaterial)
@@ -80,9 +80,9 @@ export default function History() {
         </div>
       </div>
       <HistoryFilterBar tab={tab} tf={tf} setTf={setTf} clearTf={clearTf} F={F} jobWorkers={jobWorkers} fabrics={fabrics} itemTypes={itemTypes} parties={parties} groupOptions={groupOptions} />
-      {tab === 'all' && (<div className="bg-panel border border-border rounded-lg p-4"><h2 className="text-base font-bold mb-3">All Challans ({allRows.length})</h2>{!allRows.length ? (<div className="empty-state"><div className="msg">No entries match these filters.</div></div>) : (<div className="space-y-3">{allRows.map((e) => e._type === 'issue' ? <IssueChallanCard key={'i-' + e.id} e={e} jobWorkers={jobWorkers} fabrics={fabrics} onEdit={(ent) => navigate('/issue-fabric', { state: { editEntry: ent } })} onDelete={delIssue} /> : <ReceiveChallanCard key={'r-' + e.id} e={e} jobWorkers={jobWorkers} itemTypes={itemTypes} parties={parties} fabrics={fabrics} onEdit={(ent) => navigate('/receive-material', { state: { editEntry: ent } })} onDelete={delReceive} />)}</div>)}</div>)}
+      {tab === 'all' && (<div className="bg-panel border border-border rounded-lg p-4"><h2 className="text-base font-bold mb-3">All Challans ({allRows.length})</h2>{!allRows.length ? (<div className="empty-state"><div className="msg">No entries match these filters.</div></div>) : (<div className="space-y-3">{allRows.map((e) => e._type === 'issue' ? <IssueChallanCard key={'i-' + e.id} e={e} jobWorkers={jobWorkers} fabrics={fabrics} onEdit={(ent) => navigate('/issue-fabric', { state: { editEntry: ent } })} onDelete={delIssue} /> : <ReceiveChallanCard key={'r-' + e.id} e={e} jobWorkers={jobWorkers} itemTypes={itemTypes} parties={parties} fabrics={fabrics} onEdit={(ent) => navigate('/receive-material/new', { state: { editEntry: ent } })} onDelete={delReceive} />)}</div>)}</div>)}
       {tab === 'issue' && (<div className="bg-panel border border-border rounded-lg p-4"><h2 className="text-base font-bold mb-3">Fabric Issued ({issueRows.length})</h2>{!issueRows.length ? (<div className="empty-state"><div className="msg">No fabric issue entries match these filters.</div></div>) : (<div className="space-y-3">{issueRows.map((e) => <IssueChallanCard key={e.id} e={e} jobWorkers={jobWorkers} fabrics={fabrics} onEdit={(ent) => navigate('/issue-fabric', { state: { editEntry: ent } })} onDelete={delIssue} />)}</div>)}</div>)}
-      {tab === 'receive' && (<div className="bg-panel border border-border rounded-lg p-4"><h2 className="text-base font-bold mb-3">Material Received ({receiveRows.length})</h2>{!receiveRows.length ? (<div className="empty-state"><div className="msg">No receive entries match these filters.</div></div>) : (<div className="space-y-3">{receiveRows.map((e) => <ReceiveChallanCard key={e.id} e={e} jobWorkers={jobWorkers} itemTypes={itemTypes} parties={parties} fabrics={fabrics} onEdit={(ent) => navigate('/receive-material', { state: { editEntry: ent } })} onDelete={delReceive} />)}</div>)}</div>)}
+      {tab === 'receive' && (<div className="bg-panel border border-border rounded-lg p-4"><h2 className="text-base font-bold mb-3">Material Received ({receiveRows.length})</h2>{!receiveRows.length ? (<div className="empty-state"><div className="msg">No receive entries match these filters.</div></div>) : (<div className="space-y-3">{receiveRows.map((e) => <ReceiveChallanCard key={e.id} e={e} jobWorkers={jobWorkers} itemTypes={itemTypes} parties={parties} fabrics={fabrics} onEdit={(ent) => navigate('/receive-material/new', { state: { editEntry: ent } })} onDelete={delReceive} />)}</div>)}</div>)}
     </div>
   )
 }
@@ -116,3 +116,4 @@ function HistoryFilterBar({ tab, tf, setTf, clearTf, F, jobWorkers, fabrics, ite
     </div>
   )
 }
+

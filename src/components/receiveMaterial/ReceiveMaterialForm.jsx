@@ -39,7 +39,7 @@ export default function ReceiveMaterialForm({ form, setForm, jobWorkers, itemTyp
           <ItemRow key={iIdx} item={item} iIdx={iIdx} form={form} setForm={setForm} itemTypes={itemTypes} parties={parties} fabrics={fabrics} getGroups={getGroups} getSizes={getSizes} getParts={getParts} rmItem={rmItem} />
         ))}
       </div>
-      <div className="flex gap-2"><button className="btn btn-primary flex items-center gap-1.5" onClick={handleSave}><FiSave size={14} /> Save</button><button className="btn" onClick={onCancel}>Cancel</button></div>
+      <div className="flex gap-2"><button className="btn btn-primary flex items-center gap-1.5" onClick={handleSave}><FiSave size={14} /> Save</button><button className="btn" onClick={onCancel}>Reset</button></div>
     </div>
   )
 }

@@ -21,11 +21,11 @@ const FILTERS_KEY = 'jwt_filters_orders'
  * between Pending and Completed orders.
  */
 export default function Orders() {
-  const { data: orders, loading, error, refetch } = useApiCall(fetchOrders)
-  const { data: jobWorkers } = useApiCall(fetchJobWorkers)
-  const { data: itemTypes } = useApiCall(fetchItemTypes)
-  const { data: parties } = useApiCall(fetchParties)
-  const { data: fabrics } = useApiCall(fetchFabrics)
+  const { data: orders, loading, error, refetch } = useApiCall(fetchOrders, [], 'orders')
+  const { data: jobWorkers } = useApiCall(fetchJobWorkers, [], 'jobWorkers')
+  const { data: itemTypes } = useApiCall(fetchItemTypes, [], 'itemTypes')
+  const { data: parties } = useApiCall(fetchParties, [], 'parties')
+  const { data: fabrics } = useApiCall(fetchFabrics, [], 'fabrics')
   const { mutate: saveOrder, loading: saving } = useMutation(upsertOrder)
   const { mutate: deleteOrderMut } = useMutation(softDeleteOrder)
   const [form, setForm] = useState(null)

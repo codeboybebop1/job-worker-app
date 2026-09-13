@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard'
 import Orders from './pages/Orders'
 import IssueFabric from './pages/IssueFabric'
 import ReceiveMaterial from './pages/ReceiveMaterial'
+import ReceiveMaterialNew from './pages/ReceiveMaterialNew'
 import Masters from './pages/masters/Masters'
 import JobWorkerEdit from './pages/masters/JobWorkerEdit'
 import Payments from './pages/Payments'
@@ -65,6 +66,7 @@ export default function App() {
             <Route path="/orders-list" element={<Navigate to="/orders" replace />} />
             <Route path="/issue-fabric" element={<IssueFabric />} />
             <Route path="/receive-material" element={<ReceiveMaterial />} />
+            <Route path="/receive-material/new" element={<ReceiveMaterialNew />} />
             <Route path="/masters" element={<Masters />} />
             <Route path="/masters/job-workers/:id" element={<JobWorkerEdit />} />
             <Route path="/masters/*" element={<Navigate to="/masters" replace />} />
