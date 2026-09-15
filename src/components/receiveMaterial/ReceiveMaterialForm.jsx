@@ -25,6 +25,11 @@ export default function ReceiveMaterialForm({ form, setForm, jobWorkers, itemTyp
     catch (err) { showToast('Failed: ' + err.message) }
   }
 
+  const grandTotal = form.items.reduce(
+    (sum, it) => sum + Object.values(it.sizeWise || {}).reduce((s, v) => s + (Number(v) || 0), 0),
+    0
+  )
+
   return (
     <div className="bg-panel border border-border rounded-lg p-4 mb-4">
       <h2 className="text-base font-bold mb-3">{form.id ? 'Edit' : 'New'} Receive Entry</h2>
@@ -39,7 +44,12 @@ export default function ReceiveMaterialForm({ form, setForm, jobWorkers, itemTyp
           <ItemRow key={iIdx} item={item} iIdx={iIdx} form={form} setForm={setForm} itemTypes={itemTypes} parties={parties} fabrics={fabrics} getGroups={getGroups} getSizes={getSizes} getParts={getParts} rmItem={rmItem} />
         ))}
       </div>
-      <div className="flex gap-2"><button className="btn btn-primary flex items-center gap-1.5" onClick={handleSave}><FiSave size={14} /> Save</button><button className="btn" onClick={onCancel}>Reset</button></div>
+      <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
+        <div className="text-sm font-bold">
+          Grand Total: <span className={grandTotal > 0 ? 'text-green' : 'text-text-faint'}>{grandTotal > 0 ? grandTotal + ' pcs' : '—'}</span>
+        </div>
+        <div className="flex gap-2"><button className="btn btn-primary flex items-center gap-1.5" onClick={handleSave}><FiSave size={14} /> Save</button><button className="btn" onClick={onCancel}>Reset</button></div>
+      </div>
     </div>
   )
 }
