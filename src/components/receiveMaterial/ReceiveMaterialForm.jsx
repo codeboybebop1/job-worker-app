@@ -1,10 +1,11 @@
 import { showToast } from '../ui/Toast'
 import { FiSave, FiPlus } from 'react-icons/fi'
+import Combo from '../ui/Combo'
 import ItemRow from './ItemRow'
 
 const F = 'w-full px-3 py-2 border border-border-strong rounded-md text-sm'
 
-export default function ReceiveMaterialForm({ form, setForm, jobWorkers, itemTypes, parties, fabrics, onSave, onCancel }) {
+export default function ReceiveMaterialForm({ form, setForm, jobWorkers, itemTypes, parties, fabrics, onSave, onCancel, onSelectJobWorker, onAddNewJobWorker, onSelectItemType, onItemTypeText, onAddNewItemType }) {
   // jobWorkers may still be null on first render (History → Edit navigates
   // before useApiCall resolves). Guard so .find on null never throws.
   const workers = Array.isArray(jobWorkers) ? jobWorkers : []
@@ -36,12 +37,12 @@ export default function ReceiveMaterialForm({ form, setForm, jobWorkers, itemTyp
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <div><label className="block text-[11px] font-bold text-text-soft mb-1 uppercase">Challan No.</label><input className={F} value={form.challanNo} onChange={(e) => setForm({ ...form, challanNo: e.target.value })} /></div>
         <div><label className="block text-[11px] font-bold text-text-soft mb-1 uppercase">Date</label><input type="date" className={F} value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
-        <div><label className="block text-[11px] font-bold text-text-soft mb-1 uppercase">Job Worker</label><select className={F} value={form.jobWorkerId} onChange={(e) => setForm({ ...form, jobWorkerId: e.target.value })}><option value="">Select...</option>{workers?.map((jw) => <option key={jw.id} value={jw.id}>{jw.name}</option>)}</select></div>
+        <div><label className="block text-[11px] font-bold text-text-soft mb-1 uppercase">Job Worker</label><Combo list={workers} value={form.jobWorkerId} placeholder="Search job worker..." onSelect={(id) => (onSelectJobWorker ? onSelectJobWorker(id) : setForm({ ...form, jobWorkerId: id }))} onAddNew={onAddNewJobWorker} onChange={(text) => { if (!text && form.jobWorkerId) { if (onSelectJobWorker) onSelectJobWorker(''); else setForm({ ...form, jobWorkerId: '' }) } }} className={F} /></div>
         <div><label className="block text-[11px] font-bold text-text-soft mb-1 uppercase">Order</label><select className={F} value={form.orderId} onChange={(e) => setForm({ ...form, orderId: e.target.value })}><option value="">None</option></select></div>
       </div>
       <div className="mb-4"><div className="flex justify-between items-center mb-2"><h3 className="font-bold">Items</h3><button className="btn btn-sm flex items-center gap-1" onClick={addItem}><FiPlus size={14} /> Add Row</button></div>
         {form.items.map((item, iIdx) => (
-          <ItemRow key={iIdx} item={item} iIdx={iIdx} form={form} setForm={setForm} itemTypes={itemTypes} parties={parties} fabrics={fabrics} getGroups={getGroups} getSizes={getSizes} getParts={getParts} rmItem={rmItem} />
+          <ItemRow key={iIdx} item={item} iIdx={iIdx} form={form} setForm={setForm} itemTypes={itemTypes} parties={parties} fabrics={fabrics} getGroups={getGroups} getSizes={getSizes} getParts={getParts} rmItem={rmItem} onSelectItemType={onSelectItemType} onItemTypeText={onItemTypeText} onAddNewItemType={onAddNewItemType} />
         ))}
       </div>
       <div className="flex items-center justify-between gap-3 flex-wrap mb-3">

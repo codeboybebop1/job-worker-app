@@ -68,7 +68,7 @@ export default function Combo({ list, value, placeholder = 'Search or add new...
     onSelect && onSelect(item.id)
   }
 
-  function handleAddNew() {
+  async function handleAddNew() {
     const name = filterText.trim().replace(/\s+/g, ' ')
     if (!name) return
 
@@ -80,7 +80,9 @@ export default function Combo({ list, value, placeholder = 'Search or add new...
     }
 
     if (onAddNew) {
-      const newId = onAddNew(name)
+      // onAddNew may be async (API create call) — await it so the resolved
+      // id (not a Promise) is stored in the parent form.
+      const newId = await onAddNew(name)
       if (newId) {
         setInputValue(name)
         setCurrentId(newId)
