@@ -156,11 +156,9 @@ export default function ReceiveMaterialNew() {
           <span className="text-amber-600 ml-2">Your previously unsaved work has been recovered. Continue editing or save when ready.</span>
         </div>
       )}
-      <div className="bg-panel border border-border rounded-lg p-4 mb-4">
-        <ReceiveMaterialForm form={form} setForm={setForm} jobWorkers={jobWorkers} itemTypes={itemTypes} parties={parties} fabrics={fabrics} onSave={handleSave} onCancel={handleCancel} onSelectJobWorker={handleSelectJobWorker} onAddNewJobWorker={addNewJobWorker} onSelectItemType={handleSelectItemType} onItemTypeText={handleItemTypeText} onAddNewItemType={addNewItemType} />
-      </div>
+      <ReceiveMaterialForm form={form} setForm={setForm} jobWorkers={jobWorkers} itemTypes={itemTypes} parties={parties} fabrics={fabrics} onSave={handleSave} onCancel={handleCancel} onSelectJobWorker={handleSelectJobWorker} onAddNewJobWorker={addNewJobWorker} onSelectItemType={handleSelectItemType} onItemTypeText={handleItemTypeText} onAddNewItemType={addNewItemType} saving={saving} />
       {form.id && (
-        <div className="bg-panel border border-border rounded-lg p-4">
+        <div className="bg-panel border border-border rounded-lg p-4 mt-4">
           <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-red-soft text-red hover:bg-red hover:text-white transition-colors" onClick={() => handleDelete(form.id)}><FiTrash2 size={14} /> Delete This Entry</button>
         </div>
       )}
